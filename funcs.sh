@@ -70,8 +70,6 @@ finish_game () {
         keymax=$key
         fi
     done
-    
-    echo $max_count
 
     if [[ $max_count -ne 0 ]]; then
     echo "Вид рыбы, который наиболее часто попадался: $keymax. Вы словили $max_count представителя/ей этого вида"

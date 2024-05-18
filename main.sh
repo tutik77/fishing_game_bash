@@ -1,5 +1,5 @@
 #!/bin/bash
-. ./funcscopy.sh
+. ./funcs.sh
 
 dir=locations
 if [[ ! -d $dir ]]; then
