@@ -38,38 +38,45 @@ fish_by_loc() {
 }
 
 finish_game () {
-
     echo "Хотите продолжить игру? (Y/N)"
-        read input
+    read input
 
-        if [[ "$input" == "Y" || "$input" == "y" ]]; then
-            return
-        fi
-        total_catch=$((kind0 + kind1 + kind2 + kind3 + kind4))
-    if [[ $total_catch == 0 ]]; then
-        echo "Улова нет"
-        exit 1
+    if [[ "$input" == "Y" || "$input" == "y" ]]; then
+        return
     fi
 
-    echo "Ваш итоговый улов:"
-    for i in {0..4}; do
-        var="kind$i"
-        if [[ ${!var} -ne 0 ]]; then
-            echo "${kinds[$i]} - ${!var} шт."
+    total_catch=0
+    keymax=""
+    max_count=0
+
+    for ((i=0; i<$n; i++)); do
+        count=${fish_counts[${kinds[i]}]}
+        if [[ $count -ne 0 ]]; then
+            echo "${kinds[$i]} - $count шт."
+            total_catch=$((total_catch + count))
         fi
     done
 
-    max_catch=0
-    max_index=0
-    for i in {0..4}; do
-        var="kind$i"
-        if [[ ${!var} -ge $max_catch ]]; then
-            max_catch=${!var}
-            max_index=$i
+    if [[ $total_catch == 0 ]]; then
+        echo "Улова нет"
+        exit
+    fi
+
+    echo "Вот ваш улов за сеанс ⭡"
+
+    for key in ${!fish_counts[@]}; do
+        if [[ ${fish_counts[$key]} -ge $max_count ]]; then
+        max_count=${fish_counts[$key]}
+        keymax=$key
         fi
     done
+    
+    echo $max_count
 
-    echo "Наибольшее количество пойманных рыб относятся к виду ${kinds[$max_index]}."
-    echo "Альберт Андреевич сказал, чтоб я брал рыб из файла, но никто не знает, кого туда посадят, поэтому рецепты писать смысла нет."
-    exit 1
+    if [[ $max_count -ne 0 ]]; then
+    echo "Вид рыбы, который наиболее часто попадался: $keymax. Вы словили $max_count представителя/ей этого вида"
+    echo "Т.к. Альберт Андреевич сказал сделать возможным писать своих рыб, рецепты отменяются. Простите, я не знаю как готовить рагу из синего кита"
+    fi
+
+    exit
 }

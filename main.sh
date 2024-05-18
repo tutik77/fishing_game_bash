@@ -1,13 +1,14 @@
 #!/bin/bash
-. ./funcs.sh
+. ./funcscopy.sh
 
 dir=locations
-if [[ ! -d $dir]]; then
+if [[ ! -d $dir ]]; then
     echo "Нет директории с локациями"
     exit 1
 fi
-#kind0=0; kind1=0; kind2=0; kind3=0; kind4=0
+
 locations=("Речка моя" "Река Амазонка" "Большой Барьерный риф")
+declare -A fish_counts
 
 echo "Добро пожаловать на рыбалку! Выберите локацию:"
 
@@ -21,7 +22,7 @@ select location in "${locations[@]}"; do
     fi
 done
 
-read -p "Введите 0, если хотите начать рыбалку" start
+read -p "Введите 0, если хотите начать рыбалку: " start
 if [[ $start != 0 ]]; then
     echo "Вы ввели не 0, остаетесь без рыбалки"
     exit
@@ -49,22 +50,20 @@ while true; do
     num=$(random_number 0 $((n - 1)))
     random_fish=${kinds[$num]}
     echo "Вы поймали: $random_fish"
-                    
+
     echo "1) Забрать"
     echo "2) Отпустить"
     read -p "Введите цифру: " choice
 
     if [[ $choice == 1 ]]; then
-        case $num in
-            0) ((kind0++));;
-            1) ((kind1++));;
-            2) ((kind2++));;
-            3) ((kind3++));;
-            4) ((kind4++));; 
-        esac
-    elif  [[ $choice != 2 && $choice != 1 ]]; then
+        if [[ -z "${fish_counts[$random_fish]}" ]]; then
+            fish_counts[$random_fish]=1
+        else
+            ((fish_counts[$random_fish]++))
+        fi
+    elif [[ $choice != 2 && $choice != 1 ]]; then
         echo "Вы не в состоянии по клавише попасть, так что рыбу вы не заслужили."
     fi
-    
+
     finish_game
 done
